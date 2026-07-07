@@ -3,7 +3,8 @@ import {
   Package, Truck, Receipt, TrendingUp, TrendingDown, Plus, Trash2, Upload,
   DollarSign, LayoutGrid, Tag, ChevronDown, X, Check, AlertCircle, Search,
   FileImage, CalendarDays, BadgeCheck, Settings, Star, Type, RotateCcw, Coins,
-  Users, WifiOff
+  Users, WifiOff,
+  Layers2
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -117,6 +118,7 @@ const KEYS = {
   revenues: "eo:revenues",
   settings: "eo:settings",
   selectedSuppliers: "eo:selectedSuppliers",
+  categorieslabels: "eo:categories",
 };
 
 async function loadKey(key, fallback) {
@@ -151,11 +153,12 @@ export default function EventOpsApp() {
   const [revenues, setRevenues] = useState([]);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [selectedSuppliers, setSelectedSuppliers] = useState({});
+  const [categorieslabels, setCategoriesLabels] = useState([]);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
     (async () => {
-      const [i, c, s, inv, rev, set, sel] = await Promise.all([
+      const [i, c, s, inv, rev, set, sel, cats] = await Promise.all([
         loadKey(KEYS.items, []),
         loadKey(KEYS.counters, {}),
         loadKey(KEYS.suppliers, []),
@@ -163,10 +166,12 @@ export default function EventOpsApp() {
         loadKey(KEYS.revenues, []),
         loadKey(KEYS.settings, DEFAULT_SETTINGS),
         loadKey(KEYS.selectedSuppliers, {}),
+        loadKey(KEYS.categorieslabels, []),
       ]);
       setItems(i); setCounters(c); setSuppliers(s); setInvoices(inv); setRevenues(rev);
       setSettings({ ...DEFAULT_SETTINGS, ...set });
       setSelectedSuppliers(sel);
+      setCategoriesLabels(cats);
       setLoaded(true);
     })();
   }, []);
@@ -177,6 +182,7 @@ export default function EventOpsApp() {
   useEffect(() => { if (loaded) saveKey(KEYS.invoices, invoices); }, [invoices, loaded]);
   useEffect(() => { if (loaded) saveKey(KEYS.revenues, revenues); }, [revenues, loaded]);
   useEffect(() => { if (loaded) saveKey(KEYS.settings, settings); }, [settings, loaded]);
+  useEffect(() => { if (loaded) saveKey(KEYS.categorieslabels, categorieslabels); }, [categorieslabels, loaded]);
   useEffect(() => { if (loaded) saveKey(KEYS.selectedSuppliers, selectedSuppliers); }, [selectedSuppliers, loaded]);
 
   // Realtime sync: when anyone else saves a row, apply it here too — so two
@@ -192,6 +198,7 @@ export default function EventOpsApp() {
       [KEYS.revenues]: setRevenues,
       [KEYS.settings]: (v) => setSettings({ ...DEFAULT_SETTINGS, ...v }),
       [KEYS.selectedSuppliers]: setSelectedSuppliers,
+      [KEYS.categorieslabels]: setCategoriesLabels,
     };
     const channel = supabase
       .channel("eo_kv_changes")
@@ -229,7 +236,12 @@ export default function EventOpsApp() {
     () => DEFAULT_CATEGORIES.map((c) => ({ ...c, label: settings.categoryLabels[c.id] || c.label })),
     [settings.categoryLabels]
   );
-  const catById = useCallback((id) => categories.find((c) => c.id === id) || categories[0], [categories]);
+
+  //const catById = useCallback((id) => categories.find((c) => c.id === id) || categories[0], [categories]);
+  const catById = useCallback((id) => {
+    const cat = categorieslabels.find((c) => c.label === id);
+    return cat || { id: id, label: id, code: id, color: "#8D98A8" };
+  });
 
   const nextSerial = useCallback((categoryId) => {
     const cat = catById(categoryId);
@@ -283,20 +295,20 @@ export default function EventOpsApp() {
         {tab === "inventory" && (
           <Inventory
             items={items} setItems={setItems} nextSerial={nextSerial} notify={notify}
-            categories={categories} catById={catById}
+            categories={categorieslabels} catById={catById}
             fmt={fmt} currencyCode={currencyCode} setCurrency={setCurrency}
           />
         )}
         {tab === "suppliers" && (
           <Suppliers
             suppliers={suppliers} setSuppliers={setSuppliers} notify={notify}
-            categories={categories} selectedSuppliers={selectedSuppliers} setSelectedSuppliers={setSelectedSuppliers}
+            categories={categorieslabels} selectedSuppliers={selectedSuppliers} setSelectedSuppliers={setSelectedSuppliers}
             fmt={fmt} currencyCode={currencyCode} setCurrency={setCurrency}
           />
         )}
         {tab === "invoices" && (
           <Invoices
-            invoices={invoices} setInvoices={setInvoices} notify={notify} categories={categories} catById={catById}
+            invoices={invoices} setInvoices={setInvoices} notify={notify} categories={categorieslabels} catById={catById}
             fmt={fmt} currencyCode={currencyCode} setCurrency={setCurrency}
           />
         )}
@@ -308,6 +320,9 @@ export default function EventOpsApp() {
         )}
         {tab === "admin" && (
           <AdminSettings settings={settings} setSettings={setSettings} categories={categories} notify={notify} />
+        )}
+        {tab === "admin" && (
+          <CategoriesLabels items={categorieslabels} setItems={setCategoriesLabels} notify={notify} />
         )}
       </main>
       {toast && (
@@ -331,6 +346,7 @@ function Sidebar({ tab, setTab, totals, settings, fmt, connected }) {
     { id: "suppliers", label: "Suppliers", icon: Truck },
     { id: "invoices", label: "Invoices", icon: Receipt },
     { id: "pnl", label: "P&L", icon: TrendingUp },
+    // { id: "categories", label: "Categories", icon: Layers2 },
     { id: "admin", label: "Admin Settings", icon: Settings },
   ];
   const initials = (settings.brandName || "EO").split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -628,7 +644,7 @@ function Inventory({ items, setItems, nextSerial, notify, categories, catById, f
           </Field>
           <Field label="Category">
             <select style={styles.input} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+              {categories.map((c) => <option key={c.id} value={c.label}>{c.label}</option>)}
             </select>
           </Field>
           <Field label="Quantity">
@@ -655,7 +671,7 @@ function Inventory({ items, setItems, nextSerial, notify, categories, catById, f
             </div>
             <select style={{ ...styles.input, width: 170 }} value={filter} onChange={(e) => setFilter(e.target.value)}>
               <option value="all">All categories</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+              {categories.map((c) => <option key={c.id} value={c.label}>{c.label}</option>)}
             </select>
           </div>
         }
@@ -755,7 +771,7 @@ function Suppliers({ suppliers, setSuppliers, notify, categories, selectedSuppli
           </Field>
           <Field label="Category">
             <select style={styles.input} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+              {categories.map((c) => <option key={c.id} value={c.label}>{c.label}</option>)}
             </select>
           </Field>
           <Field label="Item / service quoted">
@@ -777,7 +793,7 @@ function Suppliers({ suppliers, setSuppliers, notify, categories, selectedSuppli
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
         <select style={{ ...styles.input, width: 200 }} value={group} onChange={(e) => setGroup(e.target.value)}>
           <option value="all">All categories</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+          {categories.map((c) => <option key={c.id} value={c.label}>{c.label}</option>)}
         </select>
       </div>
 
@@ -902,7 +918,7 @@ function Invoices({ invoices, setInvoices, notify, categories, catById, fmt, cur
           </Field>
           <Field label="Category">
             <select style={styles.input} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+              {categories.map((c) => <option key={c.id} value={c.label}>{c.label}</option>)}
             </select>
           </Field>
           <Field label={`Amount (${currencyMeta(currencyCode).symbol})`}>
@@ -1211,7 +1227,7 @@ function AdminSettings({ settings, setSettings, categories, notify }) {
         </div>
       </Panel>
 
-      <Panel title="Category labels" subtitle="Rename any category. Serial codes and colors stay the same so old serials keep making sense.">
+      {/* <Panel title="Category labels" subtitle="Rename any category. Serial codes and colors stay the same so old serials keep making sense.">
         <div style={styles.formGrid}>
           {categories.map((c) => (
             <Field key={c.id} label={`${c.code} · ${DEFAULT_CATEGORIES.find((d) => d.id === c.id)?.label}`}>
@@ -1223,12 +1239,105 @@ function AdminSettings({ settings, setSettings, categories, notify }) {
             </Field>
           ))}
         </div>
-      </Panel>
+      </Panel> */}
 
       <div style={{ display: "flex", gap: 10 }}>
         <button style={styles.primaryBtn} onClick={save}><Check size={16} /> Save changes</button>
         <button style={styles.ghostBtn} onClick={resetAll}><RotateCcw size={14} /> Reset to defaults</button>
       </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Category Labels                                                   */
+/* ------------------------------------------------------------------ */
+function CategoriesLabels({ items, setItems, notify }) {
+  const [filter, setFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const [form, setForm] = useState({ label: "", code: "", color: "" });
+
+  function addItem(e) {
+    e.preventDefault();
+    if (!form.label.trim()) return notify("Category name is required.", "err");
+    const newItem = {
+      id: UID(),
+      label: form.label.trim(),
+      color: form.color.trim() || "#C9A227",
+    };
+    setItems((prev) => [newItem, ...prev]);
+    setForm({ label: "", code: "", color: "" });
+    notify(`Category "${form.label}" added.`);
+  }
+
+  function removeItem(id) {
+    setItems((prev) => prev.filter((i) => i.id !== id));
+    notify("Category deleted.");
+  }
+
+  const filtered = items
+    .filter((i) => (filter === "all" ? true : i.label === filter))
+    .filter((i) => (query ? (i.label).toLowerCase().includes(query.toLowerCase()) : true));
+
+  return (
+    <div style={{ paddingTop: 50 }}>
+      <PageHeader eyebrow="Categories" title="Category labels" subtitle="You can add, edit, or delete any category." />
+      <Panel title="Add Category">
+        <form onSubmit={addItem} style={styles.formGrid}>
+          <Field label="Category name">
+            <input style={styles.input} value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="e.g. Branded tote bag" />
+          </Field>
+          <Field label="Tag color (Please fill in the colors in hex format (e.g. #FF0000).)">
+            <a href="https://share.google/Kf5On64mjyZIDYyCm" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "#C9A227", textDecoration: "underline" }}>Pick a color</a> 
+            <input style={styles.input} value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="e.g. #FF0000" />
+          </Field>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button type="submit" style={styles.primaryBtn}><Plus size={16} /> Add Category</button>
+          </div>
+        </form>
+      </Panel>
+      <Panel
+        title="All Categories" subtitle={`Please always check the list. If you delete a category, items assigned to that category will not be displayed.`}
+        right={
+          <div style={{ display: "flex", gap: 8 }}>
+            <div style={styles.searchBox}>
+              <Search size={14} color="#8D98A8" />
+              <input style={styles.searchInput} placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            </div>
+          </div>
+        }
+      >
+        <div style={styles.tableWrap}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Item</th>
+                <th style={styles.th}>Color</th>
+                <th style={styles.th}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((it) => (
+                <tr key={it.id}>
+                  <td style={styles.td}>{it.label}</td>
+                  <td style={styles.td}>
+                    <span style={{ ...styles.catTag, borderColor: it.color, color: it.color }}>
+                      <span style={{ ...styles.catDot, background: it.color }} />
+                      {it.color}
+                    </span>
+                  </td> 
+                  <td style={styles.td}>
+                    <button style={styles.iconBtn} onClick={() => removeItem(it.id)}><Trash2 size={14} /></button>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr><td style={styles.td} colSpan={2}><EmptyState text="No items match. Add one above." /></td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
     </div>
   );
 }
