@@ -353,7 +353,10 @@ function Sidebar({ tab, setTab, totals, settings, fmt, connected }) {
   return (
     <aside style={styles.sidebar}>
       <div style={styles.brand}>
-        <div style={styles.brandMark}>{initials}</div>
+        <div style={styles.brandMark}>
+          <img src="https://x2beyond.x2info.com//web_icons/web_icons__X2_Events_Logo.png" alt="Logo" style={styles.brandMarkLogo} />
+          {/* {initials} */}
+        </div>
         <div>
           <div style={styles.brandName}>{settings.brandName}</div>
           <div style={styles.brandSub}>{settings.brandSub}</div>
@@ -1431,10 +1434,11 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   },
-  brand: { display: "flex", alignItems: "center", gap: 10 },
-  brandMark: { width: 34, height: 34, borderRadius: 8, background: "linear-gradient(135deg,#C9A227,#8B6B1F)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: 13, color: "#141A22" },
-  brandName: { fontWeight: 700, fontSize: 14.5, letterSpacing: "-0.01em", fontFamily: "var(--font-display)" },
-  brandSub: { fontSize: 11, color: "#8D98A8", marginTop: 1 },
+  brand: { display: "block", alignItems: "center", gap: 10 },
+  /*brandMark: { width: "50%", height: "100%", borderRadius: "50%", background: "linear-gradient(135deg,#C9A227,#8B6B1F)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: 13, color: "#141A22", margin: "0 auto" },*/
+  brandMarkLogo: { width: "50%", height: "auto", marginTop: 2, textAlign: "center",display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto" },
+  brandName: { fontWeight: 700, fontSize: 14.5, letterSpacing: "-0.01em", fontFamily: "var(--font-display)", lineHeight: "20px", textAlign: "center", paddingTop: 20 },
+  brandSub: { fontSize: 11, color: "#8D98A8", marginTop: 10, textAlign: "center" },
 
   navBtn: {
     width: "100%",
