@@ -354,7 +354,7 @@ function Sidebar({ tab, setTab, totals, settings, fmt, connected }) {
     <aside style={styles.sidebar}>
       <div style={styles.brand}>
         <div style={styles.brandMark}>
-          <img src="https://x2beyond.x2info.com//web_icons/web_icons__X2_Events_Logo.png" alt="Logo" style={styles.brandMarkLogo} />
+          <img src="https://www.x2logisticsnetworks.com/images/logo/X2-Logo.png" alt="Logo" style={styles.brandMarkLogo} />
           {/* {initials} */}
         </div>
         <div>
