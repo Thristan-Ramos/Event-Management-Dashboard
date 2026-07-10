@@ -469,7 +469,7 @@ function Dashboard({ items, suppliers, invoices, revenues, totals, categories, c
               <XAxis dataKey="name" tick={{ fill: "#8D98A8", fontSize: 12 }} axisLine={{ stroke: "#2A3340" }} tickLine={false} />
               <YAxis tick={{ fill: "#8D98A8", fontSize: 12 }} axisLine={false} tickLine={false} />
               <Tooltip
-                contentStyle={{ background: "#1B2430", border: "1px solid #2A3340", borderRadius: 8, fontSize: 12 }}
+                contentStyle={{ background: "#ffffff", border: "1px solid #2A3340", borderRadius: 8, fontSize: 12 }}
                 labelStyle={{ color: "#F4EFE4" }}
                 formatter={(v, k, p) => [k === "count" ? v : fmt(v), p.payload.full]}
               />
@@ -490,7 +490,7 @@ function Dashboard({ items, suppliers, invoices, revenues, totals, categories, c
                   {expenseByCategory.map((d, idx) => <Cell key={idx} fill={d.color} />)}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: "#1B2430", border: "1px solid #2A3340", borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{ background: "#ffffff", border: "1px solid #ffffff", borderRadius: 8, fontSize: 12 }}
                   formatter={(v) => fmt(v)}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, color: "#8D98A8" }} />
@@ -1075,7 +1075,7 @@ function PnL({ invoices, revenues, setRevenues, notify, fmt, currencyCode, setCu
         <StatCard icon={TrendingUp} label="Margin" value={`${margin.toFixed(1)}%`} tone={margin >= 0 ? "good" : "bad"} />
       </div>
 
-      <Panel title="Revenue vs. expense by month">
+      <Panel title="X2 Conference 2024">
         {monthly.length === 0 ? (
           <EmptyState text="Add revenue entries and invoices to see the trend." />
         ) : (
