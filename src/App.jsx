@@ -3,8 +3,7 @@ import {
   Package, Truck, Receipt, TrendingUp, TrendingDown, Plus, Trash2, Upload,
   DollarSign, LayoutGrid, Tag, ChevronDown, X, Check, AlertCircle, Search,
   FileImage, CalendarDays, BadgeCheck, Settings, Star, Type, RotateCcw, Coins,
-  Users, WifiOff,
-  Layers2
+  Users, WifiOff, Layers2, ClipboardList, BookUser
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -341,6 +340,8 @@ export default function EventOpsApp() {
 
 function Sidebar({ tab, setTab, totals, settings, fmt, connected }) {
   const nav = [
+    { id: "registeration", label: "Registeration", icon: BookUser },
+    { id: "quickbook", label: "Quickbooks", icon: ClipboardList },
     { id: "dashboard", label: "Overview", icon: LayoutGrid },
     { id: "inventory", label: "Inventory", icon: Tag },
     { id: "suppliers", label: "Suppliers", icon: Truck },
