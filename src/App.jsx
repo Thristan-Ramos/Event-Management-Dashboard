@@ -340,14 +340,14 @@ export default function EventOpsApp() {
 
 function Sidebar({ tab, setTab, totals, settings, fmt, connected }) {
   const nav = [
-    { id: "registeration", label: "Registeration", icon: BookUser },
-    { id: "quickbook", label: "Quickbooks", icon: ClipboardList },
     { id: "dashboard", label: "Overview", icon: LayoutGrid },
     { id: "inventory", label: "Inventory", icon: Tag },
     { id: "suppliers", label: "Suppliers", icon: Truck },
     { id: "invoices", label: "Invoices", icon: Receipt },
     { id: "pnl", label: "P&L", icon: TrendingUp },
     // { id: "categories", label: "Categories", icon: Layers2 },
+    { id: "registeration", label: "Registeration", icon: BookUser },
+    { id: "quickbook", label: "Quickbooks", icon: ClipboardList },
     { id: "admin", label: "Admin Settings", icon: Settings },
   ];
   const initials = (settings.brandName || "EO").split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
