@@ -346,7 +346,7 @@ function Sidebar({ tab, setTab, totals, settings, fmt, connected }) {
     { id: "invoices", label: "Invoices", icon: Receipt },
     { id: "pnl", label: "P&L", icon: TrendingUp },
     // { id: "categories", label: "Categories", icon: Layers2 },
-    { id: "registeration", label: "Registeration", icon: BookUser },
+    { id: "registration", label: "Registration", icon: BookUser },
     { id: "quickbook", label: "Quickbooks", icon: ClipboardList },
     { id: "admin", label: "Admin Settings", icon: Settings },
   ];
