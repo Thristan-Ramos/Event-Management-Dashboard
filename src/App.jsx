@@ -118,6 +118,7 @@ const KEYS = {
   settings: "eo:settings",
   selectedSuppliers: "eo:selectedSuppliers",
   categorieslabels: "eo:categories",
+  catrevenuelabels: "eo:catrevenue"
 };
 
 async function loadKey(key, fallback) {
@@ -153,6 +154,8 @@ export default function EventOpsApp() {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [selectedSuppliers, setSelectedSuppliers] = useState({});
   const [categorieslabels, setCategoriesLabels] = useState([]);
+  const [registration, setRegistration] = useState([]);
+  const [quickbookaccount, setQuickbookAccount] = useState([]);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
@@ -166,6 +169,8 @@ export default function EventOpsApp() {
         loadKey(KEYS.settings, DEFAULT_SETTINGS),
         loadKey(KEYS.selectedSuppliers, {}),
         loadKey(KEYS.categorieslabels, []),
+        loadKey(KEYS.registration, []),
+        loadKey(KEYS.quickbook, [])
       ]);
       setItems(i); setCounters(c); setSuppliers(s); setInvoices(inv); setRevenues(rev);
       setSettings({ ...DEFAULT_SETTINGS, ...set });
@@ -182,6 +187,8 @@ export default function EventOpsApp() {
   useEffect(() => { if (loaded) saveKey(KEYS.revenues, revenues); }, [revenues, loaded]);
   useEffect(() => { if (loaded) saveKey(KEYS.settings, settings); }, [settings, loaded]);
   useEffect(() => { if (loaded) saveKey(KEYS.categorieslabels, categorieslabels); }, [categorieslabels, loaded]);
+  useEffect(() => { if (loaded) saveKey(KEYS.registration, registration)}, [registration, loaded]);
+  useEffect(() => { if (loaded) saveKey(KEYS.quickbookaccount, quickbookaccount), [quickbookaccount, loaded]});
   useEffect(() => { if (loaded) saveKey(KEYS.selectedSuppliers, selectedSuppliers); }, [selectedSuppliers, loaded]);
 
   // Realtime sync: when anyone else saves a row, apply it here too — so two
@@ -198,6 +205,8 @@ export default function EventOpsApp() {
       [KEYS.settings]: (v) => setSettings({ ...DEFAULT_SETTINGS, ...v }),
       [KEYS.selectedSuppliers]: setSelectedSuppliers,
       [KEYS.categorieslabels]: setCategoriesLabels,
+      [KEYS.registration]: setRegistration,
+      [KEYS.quickbookaccount]: setQuickbookAccount
     };
     const channel = supabase
       .channel("eo_kv_changes")
@@ -316,6 +325,12 @@ export default function EventOpsApp() {
             invoices={invoices} revenues={revenues} setRevenues={setRevenues} notify={notify}
             fmt={fmt} currencyCode={currencyCode} setCurrency={setCurrency}
           />
+        )}
+        {tab === "registration" && (
+          <HupspotRegistration />
+        )}
+        {tab === "quickbook" && (
+          <QuickbookAccounting />
         )}
         {tab === "admin" && (
           <AdminSettings settings={settings} setSettings={setSettings} categories={categories} notify={notify} />
@@ -1338,6 +1353,98 @@ function CategoriesLabels({ items, setItems, notify }) {
               {filtered.length === 0 && (
                 <tr><td style={styles.td} colSpan={2}><EmptyState text="No items match. Add one above." /></td></tr>
               )}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hupspot Registration datas                                                  */
+/* ------------------------------------------------------------------ */
+function HupspotRegistration(){
+  const [query, setQuery] = useState("");
+  return (
+    <div>
+      <PageHeader eyebrow="Registration data" title="Registration data" subtitle="Show registration data from hubspot" />
+      <Panel
+        title="All Registration data" subtitle={`For the only show data from hubpot cannot do delete or something`}
+        right={
+          <div style={{ display: "flex", gap: 8 }}>
+            <div style={styles.searchBox}>
+              <Search size={14} color="#8D98A8" />
+              <input style={styles.searchInput} placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            </div>
+          </div>
+        }
+      >
+        <div style={styles.tableWrap}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                  <td style={styles.td}>xxxxxxx</td>
+                  <td style={styles.td}>xxxxxxx</td> 
+                  <td style={styles.td}>xxxxxxx</td>
+                  <td style={styles.td}>xxxxxxx</td>
+                  <td style={styles.td}>xxxxxxx</td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Quickbook Accounting datas                                                  */
+/* ------------------------------------------------------------------ */
+function QuickbookAccounting(){
+  const [query, setQuery] = useState("");
+  return (
+    <div>
+      <PageHeader eyebrow="Quickbook data" title="Quickbook data" subtitle="Show quickbook data" />
+      <Panel
+        title="All Quickbook data" subtitle={`For the only show data from Quickbook cannot do delete or something`}
+        right={
+          <div style={{ display: "flex", gap: 8 }}>
+            <div style={styles.searchBox}>
+              <Search size={14} color="#8D98A8" />
+              <input style={styles.searchInput} placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            </div>
+          </div>
+        }
+      >
+        <div style={styles.tableWrap}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+                <th style={styles.th}>Simple Header</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                  <td style={styles.td}>xxxxxxx</td>
+                  <td style={styles.td}>xxxxxxx</td> 
+                  <td style={styles.td}>xxxxxxx</td>
+                  <td style={styles.td}>xxxxxxx</td>
+                  <td style={styles.td}>xxxxxxx</td>
+                </tr>
             </tbody>
           </table>
         </div>

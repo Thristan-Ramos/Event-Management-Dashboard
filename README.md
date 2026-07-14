@@ -76,7 +76,9 @@ two env vars, deploy.)
 - **Currency and fonts** are controlled from the in-app Admin Settings page and
   are part of the same shared data, so they're consistent for everyone too.
 
-## Modify new Category
+## Modify new System
 
 - **Add New Category.** a new category can add new and add more if you want to using it
 - **Below Setting Panel.** Show Category lists below Setting panel you can see and working it easyies
+- **Add new Registration** get data from hubspot form and connected with hubspot API
+- **Add new Quickbook** accounting data from Quickbook API
